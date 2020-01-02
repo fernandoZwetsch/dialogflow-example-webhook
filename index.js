@@ -3,8 +3,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const restService = express();
-var nodemailer = require('nodemailer');
-
 
 restService.use(
   bodyParser.urlencoded({
@@ -16,31 +14,10 @@ restService.use(bodyParser.json());
 
 restService.post("/echo", function (req, res) {
 
-  let text = JSON.stringify(req.headers) + JSON.stringify(req.body);
-  console.log( text);
-  
-  var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'fernandozwetschiq@gmail.com',
-      pass: 'Zweass123'
-    }
-  });
-
-  var mailOptions = {
-    from: 'fernandozwetschiq@gmail.com',
-    to: 'fernandozwetsch@gmail.com',
-    subject: 'Sending Email using Node.js',
-    text: 'texto de exemplo'
-  };
-
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
+ console.log(req.headers);
+ console.log(req.body);
+ 
+ 
   var speech =
     req.body.queryResult &&
       req.body.queryResult.parameters &&
