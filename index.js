@@ -15,16 +15,17 @@ restService.use(
 restService.use(bodyParser.json());
 
 restService.post("/echo", function (req, res) {
+console.log(req);
 
- console.log(req.headers);
- console.log(req.body);
- console.log("===================FULLFILMENT");
- console.log(req.body.queryResult.fulfillmentMessages);
- console.log(req.body.queryResult.fulfillmentMessages[0]);
- console.log(req.body.queryResult.fulfillmentMessages[0].text);
+//  console.log(req.headers);
+//  console.log(req.body);
+//  console.log("===================FULLFILMENT");
+//  console.log(req.body.queryResult.fulfillmentMessages);
+//  console.log(req.body.queryResult.fulfillmentMessages[0]);
+//  console.log(req.body.queryResult.fulfillmentMessages[0].text);
  
- console.log("===================OUTPUTCONTECText");
- console.log(req.body.queryResult.outputContexts);
+//  console.log("===================OUTPUTCONTECText");
+//  console.log(req.body.queryResult.outputContexts);
  
  
  
