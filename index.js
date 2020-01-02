@@ -17,7 +17,7 @@ restService.use(
 restService.use(bodyParser.json());
 
 restService.post("/teste", function (req,res) {
-  const agent = new WebhookClient({ request, response });
+  const agent = new WebhookClient({ req, res });
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
  
