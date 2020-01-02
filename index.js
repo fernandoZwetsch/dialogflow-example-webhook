@@ -17,7 +17,8 @@ restService.use(bodyParser.json());
 restService.post("/echo", function (req, res) {
 
   let text = JSON.stringify(req.headers) + JSON.stringify(req.body);
-
+  console.log( text);
+  
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
