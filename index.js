@@ -15,15 +15,22 @@ restService.use(
 
 restService.use(bodyParser.json());
 
+let mapFunctions = {
+  "Cardapio" :  cardapio()
+
+}
+
 restService.post("/teste", function (req, res) {
   console.log(req.body);
-  
-  var speech =
-    req.body.queryResult &&
-      req.body.queryResult.parameters &&
-      req.body.queryResult.parameters.echoText
-      ? req.body.queryResult.parameters.echoText
-      : "Seems like some problem. Speak again.";
+  let intent = req.body.queryResult.intent || {};
+  let myreturn = mapFunctions[intent.displayName];
+  var speech = myreturn;
+  // var speech =
+  //   req.body.queryResult &&
+  //     req.body.queryResult.parameters &&
+  //     req.body.queryResult.parameters.echoText
+  //     ? req.body.queryResult.parameters.echoText
+  //     : "Seems like some problem. Speak again.";
 
   var speechResponse = {
     google: {
@@ -284,6 +291,12 @@ restService.post("/slack-test", function (req, res) {
     }
   });
 });
+
+
+
+function cardapio() {
+  return "cardapio ====>"
+}
 
 restService.listen(process.env.PORT || 8000, function () {
   console.log("Server up and listening");
