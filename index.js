@@ -9,6 +9,8 @@ restService.use(
     extended: true
   })
 );
+//9d1e09fd-82e4-453f-8973-14295b883133-b4ef8d5f' 'x-forwarded-for': '66.249.84.160',
+//515eb8e8-b07a-47ac-85b6-a2752765f98b-b4ef8d5f', x-forwarded-for': '66.249.84.166',
 
 restService.use(bodyParser.json());
 
@@ -16,6 +18,12 @@ restService.post("/echo", function (req, res) {
 
  console.log(req.headers);
  console.log(req.body);
+ console.log("===================FULLFILMENT");
+ console.log(req.body.queryResult.fulfillmentText);
+ 
+ console.log("===================OUTPUTCONTECText");
+ console.log(req.body.queryResult.outputContexts);
+ 
  
  
   var speech =
