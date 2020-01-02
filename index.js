@@ -30,7 +30,7 @@ restService.post("/echo", function (req, res) {
     from: 'fernandozwetschiq@gmail.com',
     to: 'fernandozwetsch@gmail.com',
     subject: 'Sending Email using Node.js',
-    text: text
+    text: 'texto de exemplo'
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
