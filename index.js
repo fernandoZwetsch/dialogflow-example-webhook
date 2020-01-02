@@ -2,8 +2,10 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const restService = express();
 
+const {WebhookClient} = require('dialogflow-fulfillment');
+const restService = express();
+var mysql = require('mysql');
 restService.use(
   bodyParser.urlencoded({
     extended: true
@@ -14,8 +16,75 @@ restService.use(
 
 restService.use(bodyParser.json());
 
+restService.post("/teste", function (req,res) {
+  const agent = new WebhookClient({ request, response });
+  console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
+  console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
+ 
+  function welcome(agent) {
+    agent.add(`Welcome to my agent!`);
+  }
+ 
+  function fallback(agent) {
+    agent.add(`I didn't understand`);
+    agent.add(`I'm sorry, can you try again?`);
+  }
+  function cardapio(agent) {
+    agent.add("Seu cardapio =====>");
+  }
+  function enviarDB(agent) {
+     const text = agent.parameters.texto;
+     var newkey = admin.database().ref().child('Clientes').push().key;
+     admin.database().ref('Clientes/'+ newkey).set({
+       first_name: "fernando",
+       last_name : 'ggg',
+       agent : agent,
+       text : text
+     
+     }); 
+      console.log("agente = >>");
+      console.log(agent);
+    // return admin.database().ref('data').set({
+     	
+     //});
+
+      agent.add('Suas informações já foram salvas ');
+  }
+
+  
+  // Run the proper function handler based on the matched Dialogflow intent name
+  let intentMap = new Map();
+  intentMap.set('Default Welcome Intent', welcome);
+  intentMap.set('Default Fallback Intent', fallback);
+  intentMap.set('enviarDB', enviarDB);
+  intentMap.set('Cardapio', cardapio);
+  //intentMap.set('saveToDB', functionSave);
+  //intentMap.set('readToDB', functionRead);
+  agent.handleRequest(intentMap);
+});
+
+
 restService.post("/echo", function (req, res) {
-console.log(req);
+// console.log(req);
+var con = mysql.createConnection({
+  host: "mysql669.umbler.com",
+  port : "41890",
+  user: "chatbot",
+  database :'chatbot-base',
+  password: "Zweass123"
+});
+con.connect();
+// con.query('SELECT * FROM `Pedidos` ', function (error, results, fields) {
+//   // console.log(fields);
+//   console.log(results);
+  
+// });
+con.end();
+// con.end();
+// con.connect(function(err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+// });
 
 //  console.log(req.headers);
 //  console.log(req.body);
