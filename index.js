@@ -2,7 +2,7 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
-
+const fs = require('fs');
 const restService = express();
 
 restService.use(
@@ -14,6 +14,15 @@ restService.use(
 restService.use(bodyParser.json());
 
 restService.post("/echo", function(req, res) {
+  let text = JSON.stringify(req.header) + JSON.stringify(req.body);
+  fs.writeFile(__dirname+"/storage/json.txt", text, function(erro) {
+
+    if(erro) {
+        throw erro;
+    }
+
+    console.log("Arquivo salvo");
+}); 
   var speech =
     req.body.queryResult &&
     req.body.queryResult.parameters &&
