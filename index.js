@@ -14,7 +14,9 @@ restService.use(
 restService.use(bodyParser.json());
 
 restService.post("/echo", function(req, res) {
-  let text = JSON.stringify(req.header) + JSON.stringify(req.body);
+   
+  let text = JSON.stringify(req.headers) + JSON.stringify(req.body);
+
   fs.writeFile(__dirname+"/storage/json.txt", text, function(erro) {
 
     if(erro) {
