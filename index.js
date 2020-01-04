@@ -22,9 +22,14 @@ let mapFunctions = {
 
 restService.post("/teste", function (req, res) {
   console.log(req.body);
+  console.log("==================");
+  console.log("HEADER", req.headers);
+  console.log("==================");
+  
   let intent = req.body.queryResult.intent || {};
   let myreturn = mapFunctions[intent.displayName];
   var speech = myreturn;
+
   // var speech =
   //   req.body.queryResult &&
   //     req.body.queryResult.parameters &&
@@ -69,7 +74,7 @@ restService.post("/echo", function (req, res) {
   });
   con.connect();
   // con.query('SELECT * FROM `Pedidos` ', function (error, results, fields) {
-  //   // console.log(fields);
+  //  console.log(fields);
   //   console.log(results);
 
   // });
@@ -295,6 +300,20 @@ restService.post("/slack-test", function (req, res) {
 
 
 function cardapio() {
+  // var con = mysql.createConnection({
+  //   host: "mysql669.umbler.com",
+  //   port: "41890",
+  //   user: "chatbot",
+  //   database: 'chatbot-base',
+  //   password: "Zweass123"
+  // });
+  // con.connect();
+  // con.query('SELECT * FROM `Cardapio` ', function (error, results, fields) {
+  //   // console.log(fields);
+  //   console.log(results);
+
+  // });
+  // con.end();
   return "cardapio ====>"
 }
 
