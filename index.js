@@ -2,9 +2,17 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
-
+const request = require('request');
 const restService = express();
+var shell = require('shelljs');
 var mysql = require('mysql');
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+const client = require('twilio')(accountSid, authToken);
+
+let intentMap = new Map();
+
 restService.use(
   bodyParser.urlencoded({
     extended: true
@@ -16,16 +24,136 @@ restService.use(
 restService.use(bodyParser.json());
 
 let mapFunctions = {
-  "Cardapio" :  cardapio()
+  "Cardapio": cardapio()
 
 }
+restService.post("/returnTwilio", async function (req, res) {
 
-restService.post("/teste", function (req, res) {
   console.log(req.body);
   console.log("==================");
   console.log("HEADER", req.headers);
   console.log("==================");
-  
+  //req.body.body = mensagem do usuario
+  //req.body.from =  numero de telefone do usuario
+  console.log(req.body.Body);
+  console.log(req.body.From);
+  let messageTo = req.body.To;
+  let messageFrom = req.body.From;
+  // let authToken = await shell.exec('gcloud auth application-default print-access-token').stdout;
+  // authToken = authToken.trim();
+  let authToken = "ya29.c.Kl65B8iZja5rBJZq3AlsZ-1Ea5azfb3HuPcsCn1tZ-EaqY1wM3QxPChI-qsHA9LYn_4pMGpFXybGiaQ7y9PstpfDUnlsq-FR4KPgU8KsdsqquRhkmZcWBD3f_mV5HL69"
+  console.log(authToken);
+  let twilioBody = await dialogflowSendMessage(authToken, req.body.Body);//retorna a resposta do bot
+  console.log("--------------------------------------------------------");
+//pega o queryName e passar pelos  map
+//se existir retorno 
+//manda parao o twilio
+let sendConfig = {
+  from: messageTo,
+  body: twilioBody.queryResult.fulfillmentText,
+  to: messageFrom
+};
+for (const iterator of twilioBody.queryResult.fulfillmentMessages) {
+  console.log(iterator.text.text);
+   sendConfig.body = iterator.text.text
+  await sendMessageToTwilio(sendConfig);
+}
+
+});
+
+function sendMessageToTwilio(config) {
+  return new Promise((resolve, reject) => {
+    // {
+    //   body: config.body,
+    //   from: from,
+    //   // mediaUrl: ['https://demo.twilio.com/owl.png'],
+    //   to: to
+    // }
+    client.messages
+      .create(config)
+      .then(message => resolve(message))
+      .done();
+  });
+}
+function dialogflowSendMessage(token, message) {
+  return new Promise((resolve, reject) => {
+    let sessionCode = new Date().getTime();
+    let requestConfig = {
+      url: `https://dialogflow.googleapis.com/v2/projects/bot003-mogacw/agent/sessions/1234565${sessionCode}:detectIntent`,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      json: {
+        "query_input": {
+          "text": {
+            "text": message,
+            "language_code": "pt-BR"
+          }
+        }
+      },
+      method: "POST"
+    };
+    request(requestConfig, function (error, response, body) {
+      console.log('error:', error); // Print the error if one occurred
+      console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+      console.log('body:', body); // Print the HTML for the Google homepage.
+      // for (const iterator of body.queryResult.fulfillmentMessages) {
+      //   console.log(iterator.text.text);
+      // }
+      resolve(body);
+    });
+  });
+}
+
+restService.post("/teste", function (req, res) {
+  console.log("DIALOGFLOW CHAMOU");
+  // console.log(req.body);
+  // console.log("==================");
+  // console.log("HEADER", req.headers);
+  // console.log("==================");
+  // let options = {
+  //     url: "https://dialogflow.googleapis.com/v2/projects/bot003-mogacw/agent/sessions/123456789:detectIntent",
+  //     method : "POST",
+  //     headers : {
+  //       'Content-Type': 'application/json',
+  //       Authorization : "Bearer $(gcloud auth application-default print-access-token)"
+  //     },
+  //     json : {
+  //       'displayName': 'StartStopwatch',
+  //       'priority': 500000,
+  //       'mlEnabled': true,
+  //       'trainingPhrases': [
+  //           {
+  //               'type': 'EXAMPLE',
+  //               'parts': [
+  //                   {
+  //                       'text': 'start stopwatch'
+  //                   }
+  //               ]
+  //           }
+  //       ],
+  //       'action': 'start',
+  //       'messages': [
+  //           {
+  //               'text': {
+  //                   'text': [
+  //                       'Stopwatch started'
+  //                   ]
+  //               }
+  //           }
+  //       ],
+  //   }
+  // }
+  return res.json({
+    payload: "speechResponse",
+    data: "speechResponse",
+    fulfillmentText: "speech",
+    speech: "speech",
+    displayText: "speech",
+    source: "webhook-echo-sample"
+  });
+
   let intent = req.body.queryResult.intent || {};
   let myreturn = mapFunctions[intent.displayName];
   var speech = myreturn;
@@ -317,6 +445,39 @@ function cardapio() {
   return "cardapio ====>"
 }
 
-restService.listen(process.env.PORT || 8000, function () {
+
+intentMap.set('enviarDB', enviarDB);
+let functions = intentMap.get("enviarDB");
+console.log(functions("ss"))
+
+
+function enviarDB(gg) {
+  //  const text = agent.parameters.texto;
+  //  var newkey = admin.database().ref().child('Clientes').push().key;
+  //  admin.database().ref('Clientes/'+ newkey).set({
+  //    first_name: "fernando",
+  //    last_name : 'ggg',
+  //    agent : agent,
+  //    text : text
+
+  //  }); 
+  //   console.log("agente = >>");
+  //   console.log(agent);
+
+
+  return ('Suas informações já foram salvasTeste ' + gg);
+}
+
+
+
+
+
+
+
+
+
+
+
+restService.listen(3000, function () {
   console.log("Server up and listening");
 });
